@@ -8,7 +8,7 @@ from sklearn.cluster import KMeans
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-plt.rc('font', family="Malgun Gothic")
+plt.rc('font', family="Pretendard")
 
 def load_sql(host, user, password, database):
     try:
@@ -118,21 +118,7 @@ def show_5_stores(store_name, data):
     cluster_list = list(data[data['Cluster'] == cluster_number]['store_name'])
     cluster_list.remove(store_name)
     return cluster_list
-    
-host = 'localhost'
-user = 'root'
-password = '1234'
-database = 'practice'
-result = load_sql(host, user, password, database)
 
-# cluster_df = make_clusters(result)
-# # # '롯데리아 수원영통점'과 연관된 상점들 찾기
-# top_cluster = extract_top_stores_by_cluster(cluster_df)
-# test_name = '수누리감자탕 영통점'
-# if test_name in set(top_cluster['store_name']):
-#     print(show_5_stores(test_name, top_cluster))
-# else:
-#     print("None")
 def testfunc(customer_store_visits):
     # PCA를 사용하여 차원 축소
     pca = PCA(random_state=100)

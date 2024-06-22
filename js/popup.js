@@ -95,6 +95,8 @@ function insertContent(base64data, numbers, store, others) {
     numContainer.style.marginTop = '9px';
     numContainer.style.marginBottom = '1px'
     numContainer.id = 'dynamicNumContainer';
+<<<<<<< HEAD
+=======
 
     const storeContainer = document.createElement('div');
     storeContainer.innerHTML = `이 가게를 좋아한다면 추천해요!`;
@@ -116,6 +118,29 @@ function insertContent(base64data, numbers, store, others) {
         recommendContainer.innerHTML = '이 가게는 아직 정보 수집중입니다';
         recommendContainer.style.color = 'gray';
     }
+>>>>>>> a87d9bc2ea637afdd602627543b08f983d71b080
+
+    const storeContainer = document.createElement('div');
+    storeContainer.innerHTML = `이 가게를 좋아한다면 추천해요!`;
+    storeContainer.style.textAlign = 'center';
+    storeContainer.style.marginTop = '9px';
+    storeContainer.id = 'dynamicStoreContainer';
+
+<<<<<<< HEAD
+    let recommendContainer = document.createElement('div');
+    recommendContainer.style.textAlign = 'center';
+    recommendContainer.style.marginTop = '3px';
+    recommendContainer.id = 'dynamicRecommendContainer';
+
+    if (others.length > 1) {
+        recommendContainer.innerHTML = `
+            ① <b> ${others[0] ? others[0] : ''} </b><br/>
+            ② <b> ${others[1] ? others[1] : ''} </b> <br/>
+            ③ <b> ${others[2] ? others[2] : ''} </b>`;
+    } else {
+        recommendContainer.innerHTML = '이 가게는 아직 정보 수집중입니다';
+        recommendContainer.style.color = 'gray';
+    }
 
     targetElement.parentNode.insertBefore(hoverBtn, targetElement.nextSibling)
     targetElement.parentNode.insertBefore(img, hoverBtn.nextSibling);
@@ -123,6 +148,14 @@ function insertContent(base64data, numbers, store, others) {
     targetElement.parentNode.insertBefore(storeContainer, numContainer.nextSibling);
     targetElement.parentNode.insertBefore(recommendContainer, storeContainer.nextSibling);
 
+=======
+    targetElement.parentNode.insertBefore(hoverBtn, targetElement.nextSibling)
+    targetElement.parentNode.insertBefore(img, hoverBtn.nextSibling);
+    targetElement.parentNode.insertBefore(numContainer, img.nextSibling);
+    targetElement.parentNode.insertBefore(storeContainer, numContainer.nextSibling);
+    targetElement.parentNode.insertBefore(recommendContainer, storeContainer.nextSibling);
+
+>>>>>>> a87d9bc2ea637afdd602627543b08f983d71b080
     
 }
 
