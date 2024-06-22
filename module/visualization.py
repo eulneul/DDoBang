@@ -89,15 +89,3 @@ def return_numbers(target_name, rate_df):
     store_index = sorted_df.index[sorted_df['store_name'] == target_name]
     return [len(sorted_df) - int(store_index[0]), int(sorted_df['total_customers'].iloc[store_index[0]]), int(sorted_df['revisits'].iloc[store_index[0]])]
     
-# host = 'localhost'
-# user = 'root'
-# password = '1234'
-# database = 'practice'
-# result = calculate_rate(host, user, password, database, '한식', '2024-02-01')
-
-# print(result)
-# make_graph('보영만두 영통직영점', result)
-# a = return_numbers('보영만두 영통직영점', result)
-# # # print(type(a))
-# for i in a:
-#     print(i, type(i))
