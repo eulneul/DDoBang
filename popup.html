@@ -4,18 +4,59 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="popup.css">
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
     <title>Send URL</title>
     <style>
+      .container {
+        border: 2px solid black;
+        padding: 20px;
+        width: 250px;
+        height: 300px; /* Adjusted for extra logo space */
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+      }
+      img.logo {
+        height: 100px; /* Set the height or width as needed */
+        margin-top: 15px;
+        margin-bottom: 10px;
+      }
       button {
-        padding: 10px 20px;
+        background-color: #007BFF;
+        color: white;
+        border: none;
+        padding: 5px 5px;
         font-size: 16px;
-        margin: 10px;
+        cursor: pointer;
+      }
+      #status {
+        font-size: 16px; /* Adjusted font size */
+        color: #000000
+        ; /* Dark grey text color */
+        text-align: center;
+        margin-top: 15px; /* Give some space between the text and logo */
+      }
+      #status b {
+        color: #417F37;
+        font-size: 20px;
+        /* Blue text color for bold text */
+      }
+      #status2 {
+        font-size: 14px; /* Smaller font size for the second status */
+        color: #000000; /* Lighter grey text color */
+        text-align: center;
+        line-height: 1.5; /* Added line height for better readability */
       }
     </style>
 </head>
 <body>
-    <button id="sendUrl">Send URL to Server</button>
-    <div id="status"></div>
+    <div class="container">
+        <img src="mnt/data/ddobang2.png" class="logo" alt="Logo">
+        <div id="status">또 방문할 맛집 찾기, <b>또방</b></div>
+        <div id="status2">재방문율이 궁금한 가게 페이지를 열고 <br/>아래 버튼을 눌러주세요!</div>
+        <button class="w-btn w-btn-gra2 w-btn-gra-anim" id="sendUrl">재방문율 검색</button>
+      </div>
     <script src="js/popup.js"></script>
 </body>
 </html>

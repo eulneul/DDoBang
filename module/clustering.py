@@ -14,7 +14,6 @@ def load_sql(host, user, password, database):
     try:
         engine_url = f'mysql+pymysql://{user}:{password}@{host}/{database}?charset=utf8'
         engine = create_engine(engine_url)
-        print('ok')
         query = """SELECT *
         FROM customer_record
         WHERE revisit > 1
@@ -43,7 +42,7 @@ def make_clusters(customer_store_visits):
     # KMeans를 이용해 다양한 k 값에 대해 군집화 실행
     sse = {}
     for k in range(1, 11):
-        kmeans = KMeans(n_clusters=k, random_state=100)
+        kmeans = KMeans(n_clusters=k, random_state=100, n_init=10)
         kmeans.fit(reduced_data)
         sse[k] = kmeans.inertia_
 
@@ -62,7 +61,7 @@ def make_clusters(customer_store_visits):
     print(f"Optimal number of clusters: {k_optimal}")
 
     # 최적의 군집 개수로 다시 KMeans 실행
-    kmeans = KMeans(n_clusters=k_optimal, random_state=100)
+    kmeans = KMeans(n_clusters=k_optimal, random_state=100, n_init=10)
     clusters = kmeans.fit_predict(reduced_data)
 
     # 군집 결과를 데이터에 추가
@@ -85,7 +84,7 @@ def make_clusters(customer_store_visits):
     plt.xlabel('Cluster')
     plt.ylabel('Store Name')
     plt.grid(True)
-    plt.savefig('my_grap2.png', bbox_inches='tight')
+    plt.savefig('mnt/data/my_graph2.png', bbox_inches='tight')
     cluster_store_visits.reset_index(inplace=True)
     return cluster_store_visits
 
@@ -125,12 +124,75 @@ user = 'root'
 password = '1234'
 database = 'practice'
 result = load_sql(host, user, password, database)
-cluster_df = make_clusters(result)
-# '롯데리아 수원영통점'과 연관된 상점들 찾기
-top_cluster = extract_top_stores_by_cluster(cluster_df)
-test_name = '수누리감자탕 영통점'
-if test_name in set(top_cluster['store_name']):
-    print(show_5_stores(test_name, top_cluster))
-else:
-    print("None")
+
+# cluster_df = make_clusters(result)
+# # # '롯데리아 수원영통점'과 연관된 상점들 찾기
+# top_cluster = extract_top_stores_by_cluster(cluster_df)
+# test_name = '수누리감자탕 영통점'
+# if test_name in set(top_cluster['store_name']):
+#     print(show_5_stores(test_name, top_cluster))
+# else:
+#     print("None")
+def testfunc(customer_store_visits):
+    # PCA를 사용하여 차원 축소
+    pca = PCA(random_state=100)
+    pca.fit(customer_store_visits)
+    cumulative_variance = np.cumsum(pca.explained_variance_ratio_)
+    n_components = np.where(cumulative_variance >= 0.7)[0][0] + 1
+
+    # 설명된 분산을 바탕으로 다시 PCA 실행
+    pca = PCA(n_components=n_components, random_state=100)
+    reduced_data = pca.fit_transform(customer_store_visits)
+
+    # KMeans를 이용해 다양한 k 값에 대해 군집화 실행
+    sse = {}
+    for k in range(1, 11):
+        kmeans = KMeans(n_clusters=k, random_state=100, n_init=10)
+        kmeans.fit(reduced_data)
+        sse[k] = kmeans.inertia_
+
+    # SSE의 변화율을 계산
+    sse_diff = {}
+    for k in range(2, 11):
+        sse_diff[k] = abs(sse[k] - sse[k-1])
+
+    # 변화율의 변화를 계산
+    sse_diff_diff = {}
+    for k in range(3, 11):
+        sse_diff_diff[k] = abs(sse_diff[k] - sse_diff[k-1])
+
+    # 변화율의 감소가 가장 큰 첫 번째 지점 찾기
+    k_optimal = min(sse_diff_diff, key=sse_diff_diff.get)
+    print(f"Optimal number of clusters: {k_optimal}")
+
+    # 최적의 군집 개수로 다시 KMeans 실행
+    kmeans = KMeans(n_clusters=k_optimal, random_state=100, n_init=10)
+    clusters = kmeans.fit_predict(reduced_data)
+
+    # 군집 결과를 데이터에 추가
+    customer_store_visits['Cluster'] = clusters
+    cluster_store_visits = customer_store_visits.groupby('Cluster')[customer_store_visits.columns[:-1]].sum()
+
+    top_stores_by_cluster = {}
+    for cluster in cluster_store_visits.index[:2]:
+        top_stores = cluster_store_visits.loc[cluster].nlargest(5).reset_index()
+        top_stores.columns = ['store_name', 'visits']
+        top_stores['Cluster'] = cluster
+        top_stores_by_cluster[cluster] = top_stores
+
+    top_stores_combined = pd.concat(top_stores_by_cluster.values())
+    # Plotting the bubble chart with x-axis as integers
+    plt.figure(figsize=(4,8))
+    bubble_chart = sns.scatterplot(data=top_stores_combined, x='Cluster', y='store_name', size='visits', hue='Cluster', sizes=(100, 2000), legend=None)
+    bubble_chart.tick_params(axis='both', which='major', labelsize=20)
+    plt.title('클러스터별 가장 재방문 많이한 가게 Top 5',fontsize=25)
+    plt.xlabel('Cluster',fontsize=20)
+    plt.xticks(ticks=range(len(top_stores_combined['Cluster'].unique())), labels=top_stores_combined['Cluster'].unique().astype(int), fontsize=15)
+    plt.grid(True)
+
+    # Adjust x-axis limits to ensure circles are not cut off
+    plt.tight_layout(pad=100.0)
+    plt.xlim(top_stores_combined['Cluster'].min() - 0.5, top_stores_combined['Cluster'].max() + 0.5)
+
+    plt.savefig('mnt/data/my_graph3.png', bbox_inches='tight')
 
