@@ -6,6 +6,14 @@
  <p align="center">가게 별로 재방문율을 시각화하고, 특정 가게를 많이 간 사람이 다른 어떤 가게를 많이 방문했는지 클러스터링 기반으로 추천하는 크롬 익스텐션</p>
  
  ---
+ ## 기술 스택
+ <img src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white"> <img src="https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=white">
+<img src="https://img.shields.io/badge/html5-E34F26?style=for-the-badge&logo=html5&logoColor=white">
+<img src="https://img.shields.io/badge/javascript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=white">
+<img src="https://img.shields.io/badge/css3-1572B6?style=for-the-badge&logo=css3&logoColor=white">
+
+<br/>
+ 
  ## 문제 정의 및 주제 설정
  최근 온라인 리뷰의 신뢰도가 저하되고 있는 상황에서, 전통적인 리뷰 시스템의 대안으로 재방문율을 제시한다. <br/>
  재방문율을 통해 소비자는 일회성 광고 리뷰를 감별할 수 있고, 소비자의 진정한 만족도와 충성도를 파악할 수 있다. <br/>
