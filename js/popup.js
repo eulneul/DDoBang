@@ -1,30 +1,28 @@
 document.getElementById('sendUrl').addEventListener('click', function() {
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-        // 현재 페이지의 제목을 가져오는 코드
+    chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
         chrome.scripting.executeScript({
-            target: {tabId: tabs[0].id},
+            target: { tabId: tabs[0].id },
             function: getPageTitle
         }, function(results) {
-            // 가져온 제목을 서버로 전송
-            fetch('http://127.0.0.1:5000/send_url', {
+            fetch('http://localhost:5000/send_url', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ 
-                    url: tabs[0].url, 
-                    title: results[0].result // 제목 데이터 추가
+                body: JSON.stringify({
+                    url: tabs[0].url,
+                    title: results[0].result
                 })
             })
-            .then(response => response.json()) // JSON 응답 파싱
+            .then(response => response.json())
             .then(data => {
                 if (data.error) {
                     console.error('Error:', data.error);
                 } else {
                     chrome.scripting.executeScript({
-                        target: {tabId: tabs[0].id},
-                        function: insertContent,
-                        args: [data.image, data.numbers, data.store, data.others] // 이미지, 숫자, 가게 데이터를 스크립트로 전달
+                        target: { tabId: tabs[0].id },
+                        function: insertPopupContent,
+                        args: [data.image, data.numbers, data.store, data.others]
                     });
                 }
             })
@@ -33,129 +31,87 @@ document.getElementById('sendUrl').addEventListener('click', function() {
     });
 });
 
-// 현재 페이지의 제목을 가져오는 함수
 function getPageTitle() {
     return document.title;
 }
 
-function insertContent(base64data, numbers, store, others) {
-    const targetElement = document.querySelector('#entryIframe').parentElement;
-    targetElement.style.width = '100%'; 
-    targetElement.style.overflow = 'hidden';
-    const idsToRemove = ['dynamicImg', 'dynamicNumContainer', 'dynamicStoreContainer', 'dynamicRecommendContainer', 'dynamicHoverBtn', 'dynamicPopupImg'];
-    idsToRemove.forEach(id => {
-        const element = document.getElementById(id);
-        if (element) {
-            element.remove();
-        }
-    });
-    const existingImg = document.getElementById('dynamicImg');
-    if (existingImg) existingImg.remove();
-
-    const existingNumContainer = document.getElementById('dynamicNumContainer');
-    if (existingNumContainer) existingNumContainer.remove();
-
-    const existingStoreContainer = document.getElementById('dynamicStoreContainer');
-    if (existingStoreContainer) existingStoreContainer.remove();
-
-    const existingRecommendContainer = document.getElementById('dynamicRecommendContainer');
-    if (existingRecommendContainer) existingRecommendContainer.remove();
-
-    const existinghoverBtn = document.getElementById('dynamicHover-Btn');
-    if (existinghoverBtn) existinghoverBtn.remove();
-    
-    const existingpopupImg = document.getElementById('dynamicPopupImg');
-    if (existingpopupImg) existingpopupImg.remove();
-
-    const img = document.createElement('img');
-    img.src = `data:image/png;base64,${base64data}`;
-    img.style.maxWidth = '70%';
-    img.style.display = 'block';
-    img.style.margin = '0 auto';
-    img.id = 'dynamicImg';
-
-    const hoverBtn = document.createElement('button');
-    hoverBtn.textContent = '추천 기준';
-    hoverBtn.style.cssText = 'padding: 10px; font-size: 9px; position: relative; text-decoration : underline;';
-    hoverBtn.id = 'dynamicHover-Btn';
-
-    const popupImg = document.createElement('img');
-    popupImg.src = "imgpath";
-    popupImg.style.cssText = 'width: 600px; height: auto; position: absolute; left: 100%; top: 0; display: none;';
-    popupImg.id = 'dynamicPopupImg';
-
-    hoverBtn.appendChild(popupImg);
-    hoverBtn.addEventListener('mouseover', () => popupImg.style.display = 'block');
-    hoverBtn.addEventListener('mouseout', () => popupImg.style.display = 'none');
-
-
-    const numContainer = document.createElement('div');
-    numContainer.innerHTML = `이 가게는 <b> ${store} 가게 </b> 중 <br/> 재방문율 <b>${numbers[0]}위</b> 가게 입니다. <br/><br/> 최근 3개월간 방문 인원: <b>${numbers[1]}명</b> <br/> 재방문 인원: <b>${numbers[2]}명</b> `;
-    numContainer.style.textAlign = 'center';
-    numContainer.style.marginTop = '9px';
-    numContainer.style.marginBottom = '1px'
-    numContainer.id = 'dynamicNumContainer';
-<<<<<<< HEAD
-=======
-
-    const storeContainer = document.createElement('div');
-    storeContainer.innerHTML = `이 가게를 좋아한다면 추천해요!`;
-    storeContainer.style.textAlign = 'center';
-    storeContainer.style.marginTop = '9px';
-    storeContainer.id = 'dynamicStoreContainer';
-
-    let recommendContainer = document.createElement('div');
-    recommendContainer.style.textAlign = 'center';
-    recommendContainer.style.marginTop = '3px';
-    recommendContainer.id = 'dynamicRecommendContainer';
-
-    if (others.length > 1) {
-        recommendContainer.innerHTML = `
-            ① <b> ${others[0] ? others[0] : ''} </b><br/>
-            ② <b> ${others[1] ? others[1] : ''} </b> <br/>
-            ③ <b> ${others[2] ? others[2] : ''} </b>`;
-    } else {
-        recommendContainer.innerHTML = '이 가게는 아직 정보 수집중입니다';
-        recommendContainer.style.color = 'gray';
-    }
->>>>>>> a87d9bc2ea637afdd602627543b08f983d71b080
-
-    const storeContainer = document.createElement('div');
-    storeContainer.innerHTML = `이 가게를 좋아한다면 추천해요!`;
-    storeContainer.style.textAlign = 'center';
-    storeContainer.style.marginTop = '9px';
-    storeContainer.id = 'dynamicStoreContainer';
-
-<<<<<<< HEAD
-    let recommendContainer = document.createElement('div');
-    recommendContainer.style.textAlign = 'center';
-    recommendContainer.style.marginTop = '3px';
-    recommendContainer.id = 'dynamicRecommendContainer';
-
-    if (others.length > 1) {
-        recommendContainer.innerHTML = `
-            ① <b> ${others[0] ? others[0] : ''} </b><br/>
-            ② <b> ${others[1] ? others[1] : ''} </b> <br/>
-            ③ <b> ${others[2] ? others[2] : ''} </b>`;
-    } else {
-        recommendContainer.innerHTML = '이 가게는 아직 정보 수집중입니다';
-        recommendContainer.style.color = 'gray';
+function insertPopupContent(base64data, numbers, store, others) {
+    const popupId = 'customNonModalPopup';
+    let existingPopup = document.getElementById(popupId);
+    if (existingPopup) {
+        existingPopup.remove(); // 기존 팝업 제거
     }
 
-    targetElement.parentNode.insertBefore(hoverBtn, targetElement.nextSibling)
-    targetElement.parentNode.insertBefore(img, hoverBtn.nextSibling);
-    targetElement.parentNode.insertBefore(numContainer, img.nextSibling);
-    targetElement.parentNode.insertBefore(storeContainer, numContainer.nextSibling);
-    targetElement.parentNode.insertBefore(recommendContainer, storeContainer.nextSibling);
+    // 팝업 생성
+    const popup = document.createElement('div');
+    popup.id = popupId;
+    popup.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 300px;
+        padding: 15px;
+        background: white;
+        border: 1px solid #ccc;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        border-radius: 8px;
+        z-index: 10000;
+        font-family: Arial, sans-serif;
+    `;
 
-=======
-    targetElement.parentNode.insertBefore(hoverBtn, targetElement.nextSibling)
-    targetElement.parentNode.insertBefore(img, hoverBtn.nextSibling);
-    targetElement.parentNode.insertBefore(numContainer, img.nextSibling);
-    targetElement.parentNode.insertBefore(storeContainer, numContainer.nextSibling);
-    targetElement.parentNode.insertBefore(recommendContainer, storeContainer.nextSibling);
+    const closeButton = document.createElement('button');
+    closeButton.textContent = 'X';
+    closeButton.style.cssText = `
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: none;
+        border: none;
+        font-size: 14px;
+        cursor: pointer;
+    `;
+    closeButton.addEventListener('click', () => popup.remove());
 
->>>>>>> a87d9bc2ea637afdd602627543b08f983d71b080
+    const title = document.createElement('h3');
+    title.textContent = `${store} 재방문율 순위` || '정보 수집중';
+    title.style.cssText = 'text-align: center; margin-top: 0; color: #333;';
+
+    const image = document.createElement('img');
+    image.src = `data:image/png;base64,${base64data}`|| ''; 
+    image.style.cssText = 'width: 100%; height: auto; margin-top: 10px; border-radius: 4px;';
+
+    const info = document.createElement('p');
+    if (numbers && numbers.length >= 3 && numbers[0] && numbers[1] && numbers[2]) {
+        info.innerHTML = `
+            <b>재방문율:</b> ${numbers[0]}위<br/>
+            <b>최근 6개월 방문:</b> ${numbers[1]}명<br/>
+            <b>재방문:</b> ${numbers[2]}명
+        `;
+        info.style.cssText = 'font-size: 14px; color: #555; margin: 10px 0;';
+    } else {
+        info.innerHTML = '이 가게는 정보 수집 중입니다!'; // 공백으로 설정
+        info.style.cssText = 'text-align: center; font-size: 14px; color: #555; margin: 10px 0;';
+    }
     
+
+    const recommendations = document.createElement('div');
+    if (others && others.length > 1) {
+        recommendations.innerHTML = `
+            <div style="text-align: center; font-weight: bold; margin-bottom: 10px;">
+                이 가게를 좋아한다면 추천해요!
+            </div>
+            ${others.map((item, index) => `<b>${index + 1}. ${item}</b>`).join('<br/>')}
+        `;
+    } else {
+        recommendations.innerHTML = '추천 정보 수집 중';
+    }
+    recommendations.style.cssText = 'font-size: 14px; color: #555; margin-top: 10px;';
+
+    popup.appendChild(closeButton);
+    popup.appendChild(title);
+    if (base64data) popup.appendChild(image);
+    popup.appendChild(info);
+    popup.appendChild(recommendations);
+
+    document.body.appendChild(popup);
 }
-
