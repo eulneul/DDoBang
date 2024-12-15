@@ -6,10 +6,14 @@ import os
 import base64
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('Agg')
 plt.rc('font', family='Pretendard')
 
 app = Flask(__name__)
 CORS(app)
+
+current_store = [''] #The names of stores that has been collected
 
 def sequantial_visualization(host, user, password, database, store_list, after_date):
     
@@ -42,27 +46,43 @@ def receive_url():
         if 'title' in data:
             received_title = data['title']
             received_title = received_title[:-9]
+            
             print("Received URL:", received_title)
-            store_list = list_name_type(host,user,password,database,received_title)
-            numbers = sequantial_visualization(host, user, password, database, store_list, ago_date)
-            top_cluster = sequential_clustering(host, user, password, database)
-            others = whether_in_cluster(received_title, top_cluster)
-            image_path = 'mnt/data/my_graph.png'
-            if os.path.exists(image_path):
-                with open(image_path, "rb") as image_file:
-                    print('hey')
-                    encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
-                    store = store_list[1]
-                    response_data = {
-                                'image': encoded_string,
-                                'store': store,
-                                'numbers': numbers,
-                                'others': others
-                    }
-                return jsonify(response_data)
+            if received_title in current_store:
+                store_list = list_name_type(host,user,password,database,received_title)
+                numbers = sequantial_visualization(host, user, password, database, store_list, ago_date)
+                top_cluster = sequential_clustering(host, user, password, database)
+                others = whether_in_cluster(received_title, top_cluster)
+                image_path = 'mnt/data/my_graph.png'
+                #clustering_path = 'mnt/data/my_graph2.png'  
+                if os.path.exists(image_path):
+                    with open(image_path, "rb") as image_file:
+                        print('hey')
+                        encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
+                        store = store_list[1]
+                        print(store, numbers,others)
+                    # with open(clustering_path, 'rb') as clustering_file:
+                    #     encoded_clustering = base64.b64decode(clustering_file.read()).decode('utf-8')
+
+                        response_data = {
+                                    'image': encoded_string,
+                                    'store': store,
+                                    'numbers': numbers,
+                                    'others': others
+                        }
+                    return jsonify(response_data)
+                else:
+                    print("Image file not found.")
+                    return jsonify({'error': 'Image file not found'}), 404
             else:
-                print("Image file not found.")
-                return jsonify({'error': 'Image file not found'}), 404
+                response_data = {
+                                    'image': '',
+                                    'store': '',
+                                    'numbers': '',
+                                    'others': ''
+                        }
+                print(response_data)
+                return jsonify(response_data)
         else:
             return jsonify({'error': 'No URL provided'}), 400
     except Exception as e:
