@@ -14,13 +14,15 @@ mydb = mysql.connector.connect(
 mycursor = mydb.cursor() 
 
 sql1 = open('db/customer_record.sql').read()
-sql0 = 'DROP TABLE customer_record;'
+sql0 = 'DROP TABLE IF EXISTS customer_record;'
 mycursor.execute(sql0)
 mycursor.execute(sql1)
-df = pd.read_csv("datasets/dup.csv", encoding = 'utf-8-sig', index_col = 0)
+df = pd.read_csv("datasets/dupv2.csv", encoding = 'utf-8-sig',index_col=0)
 df.fillna(0, inplace=True)
+print(len(df.columns))
 
-sql2 = "insert into customer_record values(%s, %s, %s, %s, %s, %s, %s,%s, %s, %s, %s, %s, %s)"
+
+sql2 = "insert into customer_record values(%s, %s, %s, %s, %s, %s, %s)"
 
 mycursor = mydb.cursor(buffered = True)  #cursor 생성
 
